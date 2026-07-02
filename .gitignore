@@ -1,3 +1,5 @@
 /target/**
 /src/test/**
 /src/main/resources/**
+/.mvn/**
+/.vscode/**
