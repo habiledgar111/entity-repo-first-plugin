@@ -20,3 +20,5 @@ sebuah plugin yang dapat digunakan untuk generate entity dan repository dari dat
 
 ## Cara Run : 
 `mvn entity-repo:run`
+
+test rule
