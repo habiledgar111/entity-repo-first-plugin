@@ -6,7 +6,7 @@
 
     <groupId>io.github.habiledgar111</groupId>
     <artifactId>entity-repo-dbfirst-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <packaging>maven-plugin</packaging>
     <description>
     Generate Hibernate Entity and Spring Data JPA Repository from existing database.

@@ -32,18 +32,22 @@ public class GenerateMojo extends AbstractMojo {
             getLog().info("Database: " + config.getDatabase());
             getLog().info("Tables: " + String.join(", ", config.getTables()));
 
+            // Base directory project yang memanggil plugin ini
+            File projectBaseDir = new File(System.getProperty("user.dir"));
+            getLog().info("Project base directory: " + projectBaseDir.getAbsolutePath());
+
             // 2. Generate hibernate.reveng.xml
-            File revengFile = new File("src/main/resources/" + config.getOutputReveng());
+            File revengFile = new File(projectBaseDir, "src/main/resources/" + config.getOutputReveng());
             RevengGenerator.generate(config, revengFile.toPath());
-            getLog().info("hibernate.reveng.xml berhasil dibuat.");
+            getLog().info("hibernate.reveng.xml berhasil dibuat di: " + revengFile.getAbsolutePath());
 
             // 3. Auto-generate hibernate.properties dari config
-            File hibernateProps = new File("hibernate.properties");
+            File hibernateProps = new File(projectBaseDir,"src/main/resources/" + "hibernate.properties");
             HibernatePropertiesGenerator.generate(config, hibernateProps.toPath());
-            getLog().info("hibernate.properties berhasil dibuat otomatis.");
+            getLog().info("hibernate.properties berhasil dibuat di: " + hibernateProps.getAbsolutePath());
 
             // 4. Buat file hibernate-generator-pom.xml sementara
-            File tempPom = new File("hibernate-generator-pom.xml");
+            File tempPom = new File(projectBaseDir, "hibernate-generator-pom.xml");
             String safeDbUrl = config.getDbUrl().replace("&", "&amp;");
 
             String pomContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
