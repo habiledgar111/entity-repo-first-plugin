@@ -15,6 +15,7 @@ import org.apache.maven.shared.invoker.Invoker;
 
 import io.github.config.ConfigLoader;
 import io.github.config.GeneratorConfig;
+import io.github.generator.HibernatePropertiesGenerator;
 import io.github.generator.RepositoryGenerator;
 import io.github.generator.RevengGenerator;
 
@@ -36,10 +37,15 @@ public class GenerateMojo extends AbstractMojo {
             RevengGenerator.generate(config, revengFile.toPath());
             getLog().info("hibernate.reveng.xml berhasil dibuat.");
 
-            // 3. Buat file hibernate-generator-pom.xml sementara
+            // 3. Auto-generate hibernate.properties dari config
+            File hibernateProps = new File("hibernate.properties");
+            HibernatePropertiesGenerator.generate(config, hibernateProps.toPath());
+            getLog().info("hibernate.properties berhasil dibuat otomatis.");
+
+            // 4. Buat file hibernate-generator-pom.xml sementara
             File tempPom = new File("hibernate-generator-pom.xml");
             String safeDbUrl = config.getDbUrl().replace("&", "&amp;");
-            
+
             String pomContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                     "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n" +
                     "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -77,13 +83,15 @@ public class GenerateMojo extends AbstractMojo {
                     "        </plugins>\n" +
                     "    </build>\n" +
                     "</project>";
-                    
+
             java.nio.file.Files.writeString(tempPom.toPath(), pomContent);
             getLog().info("File POM sementara berhasil dibuat.");
 
-            // 4. Jalankan maven hibernate-tools
+            // 5. Jalankan maven hibernate-tools
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(tempPom);
+            // Set working directory agar hibernate.properties ditemukan
+            request.setBaseDirectory(new File(System.getProperty("user.dir")));
             // Memanggil goal spesifik hibernate-tools-maven
             request.setGoals(Collections.singletonList("org.hibernate.tool:hibernate-tools-maven:6.5.2.Final:hbm2java"));
             request.setBatchMode(true);
@@ -100,9 +108,13 @@ public class GenerateMojo extends AbstractMojo {
             getLog().info("Menjalankan hibernate-tools via Maven Invoker...");
             InvocationResult result = invoker.execute(request);
 
-            // Hapus file pom sementara setelah eksekusi selesai (berhasil atau gagal)
+            // Hapus file-file sementara setelah eksekusi selesai (berhasil atau gagal)
             if (tempPom.exists()) {
                 tempPom.delete();
+            }
+            if (hibernateProps.exists()) {
+                hibernateProps.delete();
+                getLog().info("hibernate.properties sementara berhasil dihapus.");
             }
 
             if (result.getExitCode() != 0) {
@@ -110,7 +122,7 @@ public class GenerateMojo extends AbstractMojo {
             }
             getLog().info("Berhasil generate Entity.");
 
-            // 5. Generate Repository
+            // 6. Generate Repository
             getLog().info("Memulai generate Repository...");
             RepositoryGenerator.generate(config);
 

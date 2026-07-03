@@ -3,3 +3,7 @@
 /src/main/resources/**
 /.mvn/**
 /.vscode/**
+
+# Auto-generated temp files oleh entity-repo-dbfirst-maven-plugin
+hibernate.properties
+hibernate-generator-pom.xml
