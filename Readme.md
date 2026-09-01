@@ -12,8 +12,8 @@ sebuah plugin yang dapat digunakan untuk generate entity dan repository dari dat
 > - spring.datasource.password=(password example)
 > - spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 > - generator.base-package=(package exampl)
-> - generator.entity-dir=(entity dir destination example)
-> - generator.repo-dir=(repo dir destination example)
+> - generator.entity-dir=(entity dir destination example`src/main/java/com/example/demo/entity`)
+> - generator.repo-dir=(repo dir destination example`src/main/java/com/example/demo/repo`)
 > - generator.hibernate.database=(database name yang mau di hibernate)
 > - generator.hibernate.output=hibernate.reveng.xml
 > - generator.hibernate.tables=(table yang mau hibernate example : customer,sales,user,etc)
